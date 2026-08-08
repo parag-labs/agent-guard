@@ -1,0 +1,16 @@
+# AgentGuard policy: deny-by-default, least privilege.
+tools:
+  - tool: read_file
+    allow: true
+    path_allow: ["/data/*", "/workspace/*"]
+    path_deny: ["/data/secrets/*", "*.pem", "*.env"]
+
+  - tool: http_get
+    allow: true
+    domain_allow: ["api.company.com", "docs.company.com"]
+
+  - tool: run_shell        # high-risk: human must approve
+    allow: true
+    require_approval: true
+
+  # write_file is intentionally absent -> denied by default
