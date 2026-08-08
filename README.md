@@ -51,6 +51,18 @@ guard.guard(ToolCall("read_file", {"path": "/data/report.txt"}), execute=my_read
 
 See `tests/test_agentguard.py` for the malicious-injection block demo.
 
+## Design notes
+
+- **[RFC.md](RFC.md)** - the security decisions stated as decisions (deny-by-default
+  extends to missing constrained arguments, deny-beats-allow precedence, approve-never-
+  silent-allow for high-risk tools), the threat model (tamper-*evident*, not tamper-
+  proof against the key holder), and the non-goals (it's the policy layer, not a
+  sandbox).
+- **Adversarial fuzz** (`tests/test_adversarial_fuzz.py`) - takes the attacker's seat:
+  thousands of randomized paths trying to escape the allow-root, glob/argument-shape
+  tricks, deny/allow precedence, and byte-level tampering of the signed audit chain.
+  Nothing outside the allow-list is ever authorized; any edit to the log is detected.
+
 ## Part of [parag-labs](https://github.com/parag-labs)
 
 Small, focused tools for building AI systems you can trust.
