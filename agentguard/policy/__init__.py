@@ -60,7 +60,12 @@ class Policy:
         if tp is None or not tp.allow:
             return Decision.DENY, f"tool '{call.tool}' not in allow-list (deny-by-default)"
 
-        path = str(call.args.get("path", ""))
+        path = str(call.args.get("path", "")) if call.args.get("path") is not None else ""
+        # Deny-by-default extends to constrained arguments: if a tool is restricted
+        # to certain paths but the call provides none, we can't prove it's in bounds,
+        # so we refuse rather than fall through to allow.
+        if tp.path_allow and not path:
+            return Decision.DENY, f"tool '{call.tool}' requires a path within its allowed set"
         if path:
             for pattern in tp.path_deny:
                 if fnmatch.fnmatch(path, pattern):
@@ -68,7 +73,9 @@ class Policy:
             if tp.path_allow and not any(fnmatch.fnmatch(path, p) for p in tp.path_allow):
                 return Decision.DENY, f"path '{path}' not in allowed paths"
 
-        domain = str(call.args.get("domain", ""))
+        domain = str(call.args.get("domain", "")) if call.args.get("domain") is not None else ""
+        if tp.domain_allow and not domain:
+            return Decision.DENY, f"tool '{call.tool}' requires a domain within its allowed set"
         if domain and tp.domain_allow and domain not in tp.domain_allow:
             return Decision.DENY, f"domain '{domain}' not in allow-list"
 
