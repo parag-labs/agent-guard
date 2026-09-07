@@ -62,17 +62,32 @@ guard.guard(ToolCall("read_file", {"path": "/data/report.txt"}), execute=my_read
 
 See `tests/test_agentguard.py` for the malicious-injection block demo.
 
+## Three languages, one behavior
+
+The policy engine, the runtime mediator, and the Ed25519-signed hash-chained audit
+log — plus the same 21 tests (including the adversarial fuzz suite that flips bytes
+in the signed chain) — in each language. Each uses its platform's Ed25519: Python's
+`cryptography`, the JDK's built-in provider, and BouncyCastle on .NET.
+
+| Language | Tests | Run |
+|----------|:-----:|-----|
+| Python | 21 | `pytest -q` |
+| C# (.NET 10) | 21 | `cd csharp && dotnet test` |
+| Java (17+) | 21 | `cd java && mvn test` |
+
 ## Layout
 
 ```
 agent-guard/
-├── agentguard/
-│   ├── runtime.py        # AgentGuard.guard() — mediates every tool call
-│   ├── policy/           # deny-by-default policy engine (allow-lists, path/domain globs)
-│   └── audit.py          # Ed25519-signed, hash-chained audit log + verify_chain()
-├── examples_policy.yaml  # a sample least-privilege policy
-├── tests/                # incl. the malicious-injection block demo
-└── DESIGN.md             # the threat model, why guardrails live in the runtime, the non-goals
+├── agentguard/            the policy engine + runtime + audit log (Python)
+│   ├── runtime.py         AgentGuard.guard() — mediates every tool call
+│   ├── policy/            deny-by-default policy engine (allow-lists, path/domain globs)
+│   └── audit.py           Ed25519-signed, hash-chained audit log + verify_chain()
+├── csharp/                the same engine + audit log, ported to .NET 10 (xUnit + BouncyCastle)
+├── java/                  the same, in Java 17+ (JUnit / Maven, built-in Ed25519)
+├── examples_policy.yaml   a sample least-privilege policy
+├── tests/                 incl. the malicious-injection block demo
+└── DESIGN.md              the threat model, why guardrails live in the runtime, the non-goals
 ```
 
 ## Design notes
