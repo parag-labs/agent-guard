@@ -16,21 +16,21 @@ Agents are only as safe as the tools they can call. AgentGuard gives you a reusa
 
 ## How it works
 
-
 ```mermaid
 flowchart LR
-  classDef proc fill:#4a90e2,stroke:#2c5aa0,color:#fff
-  classDef good fill:#27ae60,stroke:#1e8449,color:#fff
-  classDef bad fill:#e74c3c,stroke:#c0392b,color:#fff
-  classDef work fill:#8e44ad,stroke:#6c3483,color:#fff
-  AGENT["LLM agent<br/>(untrusted intent)"]:::bad
-  GUARD["agent-guard - deny-by-default<br/>1 - tool allowed?<br/>2 - within constraints (paths/domains)?<br/>3 - high-risk = human gate<br/>4 - hash-chain + sign decision"]:::work
-  ALLOW["tools run<br/>(read / http / shell)"]:::good
-  DENY["DENIED<br/>(nothing happens)"]:::bad
-  AUDIT[("tamper-evident audit<br/>Ed25519, hash-chained")]:::proc
+  classDef proc fill:#eff6ff,stroke:#3b82f6,color:#1e3a8a
+  classDef good fill:#f0fdf4,stroke:#22c55e,color:#14532d
+  classDef bad fill:#fef2f2,stroke:#ef4444,color:#7f1d1d
+  classDef work fill:#faf5ff,stroke:#a855f7,color:#581c87
+  classDef store fill:#f0f9ff,stroke:#0ea5e9,color:#0c4a6e
+  AGENT["LLM agent"]:::bad
+  GUARD{"Policy check"}:::work
+  ALLOW["Tool runs"]:::good
+  DENY["Denied"]:::bad
+  AUDIT[("Signed audit log")]:::store
   AGENT -->|tool call| GUARD
-  GUARD -->|allow| ALLOW
-  GUARD -->|deny| DENY
+  GUARD -->|allowed| ALLOW
+  GUARD -->|denied| DENY
   GUARD --> AUDIT
 ```
 
