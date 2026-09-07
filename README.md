@@ -51,6 +51,19 @@ guard.guard(ToolCall("read_file", {"path": "/data/report.txt"}), execute=my_read
 
 See `tests/test_agentguard.py` for the malicious-injection block demo.
 
+## Layout
+
+```
+agent-guard/
+├── agentguard/
+│   ├── runtime.py        # AgentGuard.guard() — mediates every tool call
+│   ├── policy/           # deny-by-default policy engine (allow-lists, path/domain globs)
+│   └── audit.py          # Ed25519-signed, hash-chained audit log + verify_chain()
+├── examples_policy.yaml  # a sample least-privilege policy
+├── tests/                # incl. the malicious-injection block demo
+└── DESIGN.md             # the threat model, why guardrails live in the runtime, the non-goals
+```
+
 ## Design notes
 
 - **[DESIGN.md](DESIGN.md)** - the security decisions stated as decisions (deny-by-default
