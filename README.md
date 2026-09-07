@@ -16,11 +16,22 @@ Agents are only as safe as the tools they can call. AgentGuard gives you a reusa
 
 ## How it works
 
-```
-Agent → ToolCall → [ Policy Engine ] → ALLOW  → execute
-                                     → APPROVE → human gate → allow/deny
-                                     → DENY    → block
-                          every decision → signed, chained audit log
+
+```mermaid
+flowchart LR
+  classDef proc fill:#4a90e2,stroke:#2c5aa0,color:#fff
+  classDef good fill:#27ae60,stroke:#1e8449,color:#fff
+  classDef bad fill:#e74c3c,stroke:#c0392b,color:#fff
+  classDef work fill:#8e44ad,stroke:#6c3483,color:#fff
+  AGENT["LLM agent<br/>(untrusted intent)"]:::bad
+  GUARD["agent-guard - deny-by-default<br/>1 - tool allowed?<br/>2 - within constraints (paths/domains)?<br/>3 - high-risk = human gate<br/>4 - hash-chain + sign decision"]:::work
+  ALLOW["tools run<br/>(read / http / shell)"]:::good
+  DENY["DENIED<br/>(nothing happens)"]:::bad
+  AUDIT[("tamper-evident audit<br/>Ed25519, hash-chained")]:::proc
+  AGENT -->|tool call| GUARD
+  GUARD -->|allow| ALLOW
+  GUARD -->|deny| DENY
+  GUARD --> AUDIT
 ```
 
 ## Quickstart
