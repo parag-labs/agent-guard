@@ -62,18 +62,28 @@ guard.guard(ToolCall("read_file", {"path": "/data/report.txt"}), execute=my_read
 
 See `tests/test_agentguard.py` for the malicious-injection block demo.
 
-## Three languages, one behavior
+## Six languages, one behavior
 
 The policy engine, the runtime mediator, and the Ed25519-signed hash-chained audit
-log — plus the same 21 tests (including the adversarial fuzz suite that flips bytes
-in the signed chain) — in each language. Each uses its platform's Ed25519: Python's
-`cryptography`, the JDK's built-in provider, and BouncyCastle on .NET.
+log — including the adversarial fuzz suite that flips bytes in the signed chain — in
+each language. Each uses its platform's Ed25519: Python's `cryptography`, the JDK's
+built-in provider, BouncyCastle on .NET, Go's `crypto/ed25519`, `ed25519-dalek` in
+Rust, and Node's `node:crypto`.
 
 | Language | Tests | Run |
 |----------|:-----:|-----|
 | Python | 21 | `pytest -q` |
+| Go | 29 | `cd go && go test ./...` |
+| Rust | 29 | `cd rust && cargo test` |
 | C# (.NET 10) | 21 | `cd csharp && dotnet test` |
 | Java (17+) | 21 | `cd java && mvn test` |
+| TypeScript | 21 | `cd ts && npm test` |
+
+One detail worth knowing when reading the fuzz suite: `entries()` returns a copy of
+the entry list, so a genuine reorder test has to swap entries in the backing store
+rather than in the returned array. Every port's reorder test is white-box for that
+reason, and each asserts `verifyChain()` goes false — because each entry's previous
+hash pins its position in the chain.
 
 ## Layout
 
@@ -85,6 +95,9 @@ agent-guard/
 │   └── audit.py           Ed25519-signed, hash-chained audit log + verify_chain()
 ├── csharp/                the same engine + audit log, ported to .NET 10 (xUnit + BouncyCastle)
 ├── java/                  the same, in Java 17+ (JUnit / Maven, built-in Ed25519)
+├── go/                    the same, in Go (crypto/ed25519)
+├── rust/                  the same, in Rust (ed25519-dalek)
+├── ts/                    the same, in TypeScript (vitest, node:crypto)
 ├── examples_policy.yaml   a sample least-privilege policy
 ├── tests/                 incl. the malicious-injection block demo
 └── DESIGN.md              the threat model, why guardrails live in the runtime, the non-goals
