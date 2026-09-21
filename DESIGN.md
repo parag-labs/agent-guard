@@ -25,7 +25,14 @@ within its constraints, and is there a tamper-evident record of the decision. Go
 
 ![threat model](docs/diagrams/threat-model.png)
 
-*(The same diagram renders inline as Mermaid in the [README](README.md#how-it-works); this PNG is a static export.)*
+*(The [SVG source](docs/diagrams/threat-model.svg) is the original and stays sharp at any size. The [README](README.md#how-it-works) carries a simpler Mermaid sketch for inline viewing.)*
+
+<details>
+<summary>Before the redraw - the earlier version of this diagram</summary>
+
+![threat model, before the redraw](docs/diagrams/threat-model-v1.png)
+
+</details>
 
 ## The security decisions, stated as decisions
 
